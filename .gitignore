@@ -4,9 +4,16 @@ __pycache__/
 .env
 *.egg-info/
 
-# Keep small shipped samples, ignore large regenerated datasets
+# ── Large regenerated datasets (too big for GitHub > 100 MB) ──
 data/processed/*.csv
+data/processed/training_dataset_15min.parquet
+data/processed/training_dataset_cloud.csv
+
+# ── Allow: sample CSVs + cloud parquet (small enough for GitHub) ──
 !data/processed/*_sample.csv
+!data/processed/training_dataset_2023.parquet
+
+# ── Other data ──
 data/external/*
 data/synthetic/*
 !data/*/.gitkeep

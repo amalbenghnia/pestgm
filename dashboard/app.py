@@ -56,18 +56,37 @@ footer     {visibility: hidden;}
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────
-# DATA LOADING
+# DATA LOADING  — auto-detects best available dataset
+# Priority: full CSV (local) → parquet 2023 (cloud) → sample CSV (demo)
 # ─────────────────────────────────────────────────────
 import os
 from pathlib import Path
 
-DATA_PATH = "data/processed/training_dataset_15min.csv"
 ENSTAB_PATH = "data/validation/enstab_borj_cedria_real.csv"
+
+_CANDIDATES = [
+    ("data/processed/training_dataset_15min.csv",    "csv",     "Full 2020–2023"),
+    ("data/processed/training_dataset_2023.parquet", "parquet", "2023 only (cloud)"),
+    ("data/processed/training_dataset_15min_sample.csv", "csv", "Sample (demo)"),
+]
+
+_active_path, _active_fmt, _active_label = None, None, None
+for _p, _fmt, _lbl in _CANDIDATES:
+    if Path(_p).exists():
+        _active_path, _active_fmt, _active_label = _p, _fmt, _lbl
+        break
+
+if _active_path is None:
+    st.error("❌ No dataset found. Place `training_dataset_15min.csv` in `data/processed/`.")
+    st.stop()
 
 @st.cache_data(show_spinner="Loading PV fleet data…")
 def load_main_data(file_mtime: float):
     """file_mtime is used as a cache key — when the file changes, cache is invalidated."""
-    df = pd.read_csv(DATA_PATH, parse_dates=["timestamp"])
+    if _active_fmt == "parquet":
+        df = pd.read_parquet(_active_path)
+    else:
+        df = pd.read_csv(_active_path, parse_dates=["timestamp"])
 
     # ── Auto-detect the production column name ───────
     for col_candidate in ["pv_production_mw_reference", "pv_production_mw", "pv_output_mw"]:
@@ -110,7 +129,7 @@ def load_enstab():
         return pd.DataFrame()
 
 # Pass file mtime so cache auto-invalidates when data changes
-_data_mtime = Path(DATA_PATH).stat().st_mtime if Path(DATA_PATH).exists() else 0.0
+_data_mtime = Path(_active_path).stat().st_mtime
 df_all = load_main_data(_data_mtime)
 df_enstab = load_enstab()
 
