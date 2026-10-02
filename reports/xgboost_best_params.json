@@ -1,0 +1,32 @@
+{
+  "best_params": {
+    "n_estimators": 400,
+    "max_depth": 6,
+    "learning_rate": 0.03,
+    "subsample": 0.9,
+    "colsample_bytree": 0.7,
+    "min_child_weight": 1,
+    "reg_alpha": 0.0,
+    "reg_lambda": 2.0,
+    "gamma": 0.5,
+    "random_state": 42,
+    "objective": "reg:squarederror",
+    "n_jobs": -1
+  },
+  "validation_metrics": {
+    "MAE_MW": 0.2163738625792765,
+    "RMSE_MW": 0.430980874629245,
+    "nMAE_pct_of_capacity": 2.5028261491509443,
+    "bias_MW": 0.0394622862653276
+  },
+  "final_test_metrics": {
+    "n": 9600,
+    "MAE_MW": 0.20821447938792748,
+    "RMSE_MW": 0.43145632678072526,
+    "nMAE_pct_of_capacity": 2.2547475209258656,
+    "nRMSE_pct_of_capacity": 3.7431316398090284,
+    "bias_MW": -0.005700079188157352,
+    "sMAPE_pct": 97.94743562101996
+  },
+  "note": "Tuned by time-aware train/val split (60/20 of date range); test split (remaining 20%) evaluated exactly once with locked parameters."
+}
